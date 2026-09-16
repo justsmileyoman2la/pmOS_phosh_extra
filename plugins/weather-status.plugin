@@ -1,0 +1,8 @@
+[Plugin]
+Id=weather-status
+Name=Weather Status
+Name[ru]=Погода (панель)
+Comment=Current temperature in the top panel
+Comment[ru]=Текущая температура в верхней панели
+Types=status-icon;
+Plugin=libphosh-plugin-weather-status.so

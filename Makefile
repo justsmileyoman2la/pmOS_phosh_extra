@@ -15,6 +15,7 @@ ALL_LIBS    = $(GTK_LIBS) $(JSON_LIBS) $(SOUP_LIBS)
 PLUGINS = \
   libphosh-plugin-weather.so \
   libphosh-plugin-weather-quick-setting.so \
+  libphosh-plugin-weather-status.so \
   libphosh-plugin-status-icons-toggle.so \
   libphosh-plugin-indicators-revealer.so
 
@@ -24,6 +25,9 @@ libphosh-plugin-weather.so: src/weather-lockscreen.c
 	gcc -shared -fPIC -o $@ $< $(ALL_CFLAGS) $(ALL_LIBS)
 
 libphosh-plugin-weather-quick-setting.so: src/weather-quick-setting.c
+	gcc -shared -fPIC -o $@ $< $(ALL_CFLAGS) $(ALL_LIBS)
+
+libphosh-plugin-weather-status.so: src/weather-status.c
 	gcc -shared -fPIC -o $@ $< $(ALL_CFLAGS) $(ALL_LIBS)
 
 libphosh-plugin-status-icons-toggle.so: src/status-icons-toggle.c
