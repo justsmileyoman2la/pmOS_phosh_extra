@@ -1,0 +1,8 @@
+[Plugin]
+Id=weather
+Name=Weather
+Name[ru]=Погода
+Comment=Show current weather on the lock screen
+Comment[ru]=Показать текущую погоду на экране блокировки
+Types=lockscreen;
+Plugin=libphosh-plugin-weather.so

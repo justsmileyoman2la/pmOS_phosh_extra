@@ -1,0 +1,8 @@
+[Plugin]
+Id=indicators-revealer
+Name=Indicators Revealer
+Name[ru]=Скрытие индикаторов
+Comment=Controls visibility of status bar icons via file flag
+Comment[ru]=Управляет видимостью иконок через файловый флаг
+Types=quick-setting;
+Plugin=libphosh-plugin-indicators-revealer.so

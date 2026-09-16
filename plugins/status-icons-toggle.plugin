@@ -1,0 +1,8 @@
+[Plugin]
+Id=status-icons-toggle
+Name=Status Icons Toggle
+Name[ru]=Переключатель иконок
+Comment=Hide/show all status bar icons
+Comment[ru]=Скрыть/показать все иконки в панели
+Types=quick-setting;
+Plugin=libphosh-plugin-status-icons-toggle.so
