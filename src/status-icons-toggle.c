@@ -1,5 +1,5 @@
 /*
- * Status Icons Toggle - quick setting tile
+ * Status Icons Toggle - quick setting tile + panel swipe
  * Calls ~/toggle-status-icons.sh when toggled
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -37,6 +37,22 @@ is_visible (void)
 }
 
 static void
+show_icons (void)
+{
+  char *flag = g_build_filename (g_get_home_dir (), VISIBLE_FLAG, NULL);
+  g_file_set_contents (flag, "", 0, NULL);
+  g_free (flag);
+}
+
+static void
+hide_icons (void)
+{
+  char *flag = g_build_filename (g_get_home_dir (), VISIBLE_FLAG, NULL);
+  unlink (flag);
+  g_free (flag);
+}
+
+static void
 update_icon (StatusIconsToggle *self)
 {
   gboolean visible = is_visible ();
@@ -65,13 +81,10 @@ do_toggle (StatusIconsToggle *self)
     char *argv[] = { script, NULL };
     g_spawn_async (NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
   } else {
-    gboolean active = phosh_quick_setting_get_active (PHOSH_QUICK_SETTING (self));
-    char *flag = g_build_filename (g_get_home_dir (), VISIBLE_FLAG, NULL);
-    if (!active)
-      g_file_set_contents (flag, "", 0, NULL);
+    if (is_visible ())
+      hide_icons ();
     else
-      unlink (flag);
-    g_free (flag);
+      show_icons ();
   }
   g_free (script);
 
@@ -84,6 +97,44 @@ on_button_release (GtkWidget *widget, GdkEventButton *event, StatusIconsToggle *
   do_toggle (self);
   return FALSE;
 }
+
+/* --- Panel swipe: left=hide, right=show --- */
+
+static void
+on_swipe (GtkGestureSwipe *gesture, double velocity_x, double velocity_y, gpointer user_data)
+{
+  if (velocity_x > 0)
+    show_icons ();
+  else
+    hide_icons ();
+}
+
+static gboolean
+attach_swipe_to_panel (gpointer user_data)
+{
+  GList *toplevels, *l;
+  GtkWidget *panel = NULL;
+
+  toplevels = gtk_window_list_toplevels ();
+  for (l = toplevels; l; l = l->next) {
+    const char *tname = g_type_name (G_TYPE_FROM_INSTANCE (l->data));
+    if (g_strcmp0 (tname, "PhoshTopPanel") == 0) {
+      panel = l->data;
+      break;
+    }
+  }
+  g_list_free (toplevels);
+
+  if (!panel)
+    return G_SOURCE_CONTINUE;
+
+  GtkGesture *swipe = gtk_gesture_swipe_new (panel);
+  g_signal_connect (swipe, "swipe", G_CALLBACK (on_swipe), NULL);
+
+  return G_SOURCE_REMOVE;
+}
+
+/* --- Plugin boilerplate --- */
 
 static void
 status_icons_toggle_dispose (GObject *object)
@@ -110,6 +161,8 @@ status_icons_toggle_init (StatusIconsToggle *self)
 
   phosh_quick_setting_set_active (PHOSH_QUICK_SETTING (self), is_visible ());
   g_signal_connect (self, "button-release-event", G_CALLBACK (on_button_release), self);
+
+  g_idle_add (attach_swipe_to_panel, NULL);
 }
 
 char **
