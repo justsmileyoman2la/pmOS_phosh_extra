@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=GIF Wallpaper
+Exec=%h/wallpaper/daemon.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
